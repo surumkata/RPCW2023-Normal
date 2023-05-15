@@ -1,16 +1,19 @@
 1.1) SETUP BASE DE DADOS
 
-Primeiro fiz uma script que adicionou um campo "_id" em todos os contratos e adicionei um campo com o ano de inicio de contrato atraves da DataInicioContrato.
-A script encontra-se na pasta data e chama-se script.py
+Primeiro fiz uma script para adicionar um campo "_id" em todos os contratos e também adicionar um campo com o ano de inicio de contrato (AnoInicioContrato) através da DataInicioContrato, uma vez que será útil nas pesquisas por ano.
+A script encontra-se na pasta "data" e chama-se "script.py"
 
+Depois criei um base de dados no mongodb utilizando um container no docker.
 
 >> docker volume create mongodbdata
 >> docker cp emprego-cientifico.json mongo6:/tmp/emprego-cientifico-tratado.json
 >> docker exec mongo6 mongoimport -d scienceJobs -c contracts --file /tmp/emprego-cientifico-tratado.json --jsonArray
 
+Depois disto, consigo ter acesso à base de dados com:
 
+>> docker exec -it mongo6 mongosh
 
-1.2)
+1.2) QUERIES 
 
 1. 
 
@@ -74,22 +77,22 @@ scienceJobs> db.contracts.aggregate([ { $group : { _id: "$NIPCInstituicao" , tot
   ...
 ]
 
-instruções de como executar as aplicações desenvolvidas:
-
-API de dados:
+1.3)
+A API encontra-se na pasta "ex1" e para ser usada:
 
 >> cd ex1
 >> npm install
 >> npm start
 
-Web App:
+2)
+A Web App encontra-se na pasta "ex2" e para ser usada:
 
 >> cd ex2
 >> npm install
 >> npm start
 
 
-NOTAS FINAIS:
+[NOTAS FINAIS]:
 
 No 1.3 (GET /contracts?inst=AAA: devolve a lista dos contratos realizados pela instituição contratante AAA;), fiquei em duvida se o AAA recebia o NomeInstituicao ou o NIPCInstituicao.
 Fiz a receber o NomeInstituicao, mas como na web app dava mais jeito que fosse por NIPCInstituicao também implementei uma rota (GET /contracts?nipc=NIPC) que é usada na web app.
