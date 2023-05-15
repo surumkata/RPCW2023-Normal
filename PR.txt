@@ -1,0 +1,95 @@
+1.1) SETUP BASE DE DADOS
+
+Primeiro fiz uma script que adicionou um campo "_id" em todos os contratos e adicionei um campo com o ano de inicio de contrato atraves da DataInicioContrato.
+A script encontra-se na pasta data e chama-se script.py
+
+
+>> docker volume create mongodbdata
+>> docker cp emprego-cientifico.json mongo6:/tmp/emprego-cientifico-tratado.json
+>> docker exec mongo6 mongoimport -d scienceJobs -c contracts --file /tmp/emprego-cientifico-tratado.json --jsonArray
+
+
+
+1.2)
+
+1. 
+
+scienceJobs> db.contracts.countDocuments()
+17943
+
+2.
+
+scienceJobs> db.contracts.find({NomeInstituicao:"Universidade do Minho"},{}).count()
+166
+
+3. 
+
+scienceJobs> db.contracts.distinct("AreaCNAEF")
+[
+  '',
+  'Agricultura sem definição precisa',
+  'Agricultura, silvicultura, pescas e ciências veterinárias sem definição precisa',
+  'Ambiente sem definição precisa',
+  'Ambientes naturais e vida selvagem',
+  'Aprendizagem de línguas',
+  'Arquitetura e construção sem definição precisa',
+  ...
+]
+
+4.
+
+scienceJobs> db.contracts.aggregate([ { $group : { _id: "$AnoInicioContrato", total: {$count: {}}}}])
+[
+  { _id: 2017, total: 1310 },
+  { _id: 2019, total: 5833 },
+  { _id: 2018, total: 2042 },
+  { _id: 2021, total: 2465 },
+  { _id: 2020, total: 6293 }
+]
+
+5.
+
+scienceJobs> db.contracts.aggregate([ { $group : { _id: "$NIPCInstituicao" , total: {$count: {}}}}])
+[
+  { _id: 500743282, total: 20 },
+  { _id: 507779835, total: 4 },
+  { _id: 511021739, total: 8 },
+  { _id: 515343641, total: 1 },
+  { _id: 505232200, total: 3 },
+  { _id: 503720364, total: 181 },
+  { _id: 508792657, total: 8 },
+  { _id: 515491721, total: 22 },
+  { _id: 513010661, total: 24 },
+  { _id: 503013366, total: 9 },
+  { _id: 501613528, total: 48 },
+  { _id: 501350195, total: 15 },
+  { _id: 508820111, total: 28 },
+  { _id: 501630473, total: 1 },
+  { _id: 506197760, total: 17 },
+  { _id: 501641238, total: 105 },
+  { _id: 508237858, total: 3 },
+  { _id: 506512495, total: 1 },
+  { _id: 500825840, total: 15 },
+  { _id: 501846654, total: 2 },
+  ...
+]
+
+instruções de como executar as aplicações desenvolvidas:
+
+API de dados:
+
+>> cd ex1
+>> npm install
+>> npm start
+
+Web App:
+
+>> cd ex2
+>> npm install
+>> npm start
+
+
+NOTAS FINAIS:
+
+No 1.3 (GET /contracts?inst=AAA: devolve a lista dos contratos realizados pela instituição contratante AAA;), fiquei em duvida se o AAA recebia o NomeInstituicao ou o NIPCInstituicao.
+Fiz a receber o NomeInstituicao, mas como na web app dava mais jeito que fosse por NIPCInstituicao também implementei uma rota (GET /contracts?nipc=NIPC) que é usada na web app.
